@@ -50,11 +50,17 @@ class ParsedOptions
   end
 end
 
-cmd_opts = ParsedOptions.new()
-case cmd_opts.options[:path]
-when 1
-  DataValidator.validate(ARGV[0])
-  OutputWriter.new(DataString.new(ARGV[0])).print_output
-when 2
-  OutputWriter.new(DataString.new('you awesome Rubyist!')).print_output
+class Rube
+  def run
+    cmd_opts = ParsedOptions.new()
+    case cmd_opts.options[:path]
+    when 1
+      DataValidator.validate(ARGV[0])
+      OutputWriter.new(DataString.new(ARGV[0])).print_output
+    when 2
+      OutputWriter.new(DataString.new('you awesome Rubyist!')).print_output
+    end
+  end
 end
+
+Rube.new.run
