@@ -17,20 +17,15 @@ class Path
   end
 end
 
-class DataString
-  attr_accessor :data_string
-  def initialize(input_string)
-    @data_string = input_string
-  end
-end
-
 class OutputWriter
   # Interface takes a DataString instance
   def initialize(data_string)
     @name = data_string
   end
-  def print_output
+  def print_simple
     p "Hello #{@name.data_string}"
+  end
+  def print_complex
   end
 end
 
@@ -55,10 +50,11 @@ class Rube
     cmd_opts = ParsedOptions.new()
     case cmd_opts.options[:path]
     when 1
+      # For this path we need to have an argument supplied on the command line
       DataValidator.validate(ARGV[0])
-      OutputWriter.new(DataString.new(ARGV[0])).print_output
+      OutputWriter.new(ARGV[0]).print_simple
     when 2
-      OutputWriter.new(DataString.new('you awesome Rubyist!')).print_output
+      OutputWriter.new('you awesome Rubyist!').print_simple
     end
   end
 end
