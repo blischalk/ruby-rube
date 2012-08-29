@@ -17,15 +17,52 @@ class Path
   end
 end
 
-class OutputWriter
+class Contestant
+  attr_accessor :obstacle
+  attr_accessor :completed_obstacles
+  attr_reader :message
+  def initialize(message)
+    @message=message
+    @obstacle = @completed_obstacles = 0
+  end
+  def speech
+    puts 'Greetings to all'
+    puts @message
+    puts "I have conquered #{completed_obstacles} obstacle(s) to be here"
+  end
+end
+
+class Podeum
   # Interface takes a DataString instance
-  def initialize(data_string)
-    @name = data_string
+  def initialize(contestant)
+    @contestant = contestant
   end
-  def print_simple
-    p "Hello #{@name.data_string}"
+  def present
+    puts "#{@contestant.speech}"
   end
-  def print_complex
+end
+
+# The ladder is an array that is the length of the input string.
+# Initially the string is assigned to the first array item.  The message is
+# moved from each position in the array to the next position until the array has
+# no more positions. When the message gets to the top of the ladder it jumps off....
+class Ladder
+  attr_reader :contestant
+  def initialize(contestant)
+    @contestant = contestant
+    @message = @contestant.message
+    setup_ladder(@message)
+    @contestant.completed_obstacles += 1
+  end
+  def setup_ladder(message)
+    @message_length = message.length
+    @ladder = Array.new(@message_length)
+    @ladder.each_with_index do |v, i|
+      @ladder[i] = message
+      @ladder[i - 1] = nil unless i == 0
+      p "Climed on to step #{i +1} of the ladder"
+    end
+    p 'Ahhhhhhh...... (Jumped off the ladder)'
   end
 end
 
@@ -35,7 +72,7 @@ class ParsedOptions
     @options = {}
     optparse = OptionParser.new do |opts|
       opts.banner = "Usage: optparse1.rb [options] file1 file2 ..."
-      @options[:path] = nil
+      @options[:path] = 1
       opts.on( '-p', '--path PATH', 'Select which path to run') do |path|
         @options[:path] = path.to_i
       end
@@ -52,7 +89,12 @@ class Rube
     when 1
       # For this path we need to have an argument supplied on the command line
       DataValidator.validate(ARGV[0])
-      OutputWriter.new(ARGV[0]).print_simple
+      contestant = Contestant.new(ARGV[0])
+      puts 'Contestent runs to the first obstacle... The Ladder'
+      ladder = Ladder.new(contestant)
+      puts 'Contestent runs to to the podeum to bring his message to the world...'
+      podeum = Podeum.new(contestant)
+      podeum.present
     when 2
       OutputWriter.new('you awesome Rubyist!').print_simple
     end
